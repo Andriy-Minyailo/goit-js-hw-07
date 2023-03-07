@@ -38,15 +38,21 @@ galleryContainer.innerHTML = galleryItems.map(({preview, original, description})
 // }
 
 function onModalImage(event) {
-    event.preventDefault();
+  event.preventDefault();
+   if (event.target.nodeName !== "IMG") {
+    return;
+  }
     const instance = basicLightbox.create(`
-    <img src="${event.target.dataset.source}" width="800" height="600">`)
-    instance.show()
-    if (instance.visible()) {
-        galleryContainer.addEventListener('keydown', event => {
-            if (event.key === 'Escape') {
-                instance.close();
-            }
-        })
+    <img src="${event.target.dataset.source}" width="800" height="600">`, {
+      onShow: () => galleryContainer.addEventListener('keydown', onCloseModal),
+      onClose: () => galleryContainer.removeEventListener('keydown', onCloseModal),
     }
+    )
+  instance.show();
+  function onCloseModal(event) {
+      if (event.key === 'Escape') {
+    instance.close();
+    }
+  }
 }
+
